@@ -3,3 +3,14 @@ start - Занять переговорку
 cancel - Отменить запись в переговорку
 show_ordered - Кто записался в переговорки
 help - Какие команды я принимаю
+
+
+CREATE EVENT delete_class_data
+
+ON SCHEDULE EVERY 3 DAY
+
+DO
+
+DELETE FROM `meetings`;
+
+[/php]

@@ -133,7 +133,7 @@ func main() {
 			// Use full-fledged bot's functions
 			// only if you need a result:
 			user_comment = text
-			c.Send(user_comment + "Твой комментарий")
+			c.Send(user_comment + " " + "Твой комментарий")
 			// Instead, prefer a context short-hand:
 			c.Send("На какое время хочешь записаться ?")
 			b.Handle(tele.OnText, func(c tele.Context) error {
@@ -146,7 +146,7 @@ func main() {
 				)
 				user_time = text
 				// Instead, prefer a context short-hand:
-				return c.Send(user_time + " " + "ТЫ запишешься на это время")
+				return c.Send(user_time + " " + "Ты записан на это время")
 			})
 			b.Handle(tele.OnText, func(c tele.Context) error {
 
@@ -158,20 +158,34 @@ func main() {
 				)
 
 				user_time = text
+				//
 
+				//PLACE FOR CALLBACK FUNCTION
+
+				//
+				dbcheck := `SELECT * FROM meetings WHERE in_time = $1`
 				data := `UPDATE meetings 
-					SET in_meet = true 
-					WHERE in_time = $1`
+					SET in_meet = true, comment = $1,user_name = $2
+					WHERE in_time = $3`
 				user_time = text
 
-				if _, err = db.Exec(data, user_time); err != nil {
-					c.Send("Сожалеем но на это время уже кто-то записан")
-					return c.Send(user_time)
+				if rows, _ := db.Exec(dbcheck, user_time); rows != user_time {
+					
+					c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует или кто-то уже записан")
+					return c.Send(rows)
 				} else {
-					c.Send("Удачно провёл запись")
+					fmt.Println(rows)
+					c.Send(rows)
+				}
+
+				if _, err = db.Exec(data, user_comment, c.Sender().Username, user_time); err != nil {
+					c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует или кто-то уже записан")
+					return c.Send(err)
+				} else {
+					c.Send(err)
 				}
 				// Instead, prefer a context short-hand:
-				return c.Send(user_time + " " + "ТЫ запишешься на это время")
+				return c.Send(c.Sender().Username + "ТЫ запиcан на" + " " + user_time)
 			})
 
 			return nil
@@ -180,16 +194,38 @@ func main() {
 	})
 
 	b.Handle("/cancel", func(c tele.Context) error {
+		var user_time string
 		c.Send("С какого времени вы хотите убрать бронь")
+		b.Handle(tele.OnText, func(c tele.Context) error {
 
-		var (
-			user = c.Sender()
-			text = c.Text()
-		)
+			// All the text messages that weren't
+			// captured by existing handlers.
 
-		c.Update()
-		c.Send(text)
-		c.Send(user.FirstName)
+			var (
+				text = c.Text()
+			)
+
+			user_time = text
+			//
+
+			//PLACE FOR CALLBACK FUNCTION
+
+			//
+			data := `UPDATE meetings 
+					SET in_meet = false, comment = 'Никем не занята',user_name = ' '
+					WHERE in_time = $3`
+			//user_time = text
+
+			if _, err = db.Exec(data, user_time); err != nil {
+				c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует")
+				return c.Send(err)
+			} else {
+				c.Send(err)
+			}
+			// Instead, prefer a context short-hand:
+			return c.Send(c.Sender().Username + "Ты удалил запись на" + " " + user_time)
+		})
+
 		return nil
 	})
 	b.Start()
