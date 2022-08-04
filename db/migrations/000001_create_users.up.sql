@@ -9,7 +9,7 @@ CREATE TABLE "meetings" (
 insert into "meetings"(id,comment,user_name,in_time,in_meet)
 values(1,'Никем не занята','Vladvlk','11:00','false'),
       (2,'Заняла для обсуждения кофе','SophieVL','11:30','true'),
-      (3,'Никем не занята',' ','12:00','false'),
+      (3,'Заняла ','greoiner','12:00','true'),
       (4,'Никем не занята',' ','12:30','false'),
       (5,'Никем не занята',' ','13:00','false'),
       (6,'Никем не занята',' ','13:30','false'),

@@ -169,15 +169,6 @@ func main() {
 					WHERE in_time = $3`
 				user_time = text
 
-				/*if rows, _ := db.Exec(dbcheck, user_time); err != nil {
-
-					c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует или кто-то уже записан")
-					return c.Send(rows)
-				} else {
-					fmt.Println(rows)
-					c.Send(rows)
-				}*/
-
 				user_time_valid := false
 				for i := 1; i < 10; i++ {
 					if user_time == "19:30" {
@@ -195,7 +186,7 @@ func main() {
 						break
 					}
 				}
-				if user_time_valid != true {
+				if !user_time_valid {
 					return c.Send("Возможно такое время не предусмотрено")
 				}
 
@@ -216,13 +207,44 @@ func main() {
 
 	b.Handle("/cancel", func(c tele.Context) error {
 		var user_time string
-		c.Send("С какого времени вы хотите убрать бронь")
+		c.Send("Вот список ваших броней")
+
+		var (
+			text = c.Text()
+		)
+
+		show := `SELECT * FROM meetings
+					WHERE user_name = $1`
+		rows, err := db.Query(show, c.Sender().Username)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for rows.Next() {
+			var id int
+			var comment string
+			var time string
+			var in_meet bool
+			var user_name string
+			if err := rows.Scan(&id, &comment, &user_name, &time, &in_meet); err != nil {
+				log.Fatal(err)
+			}
+			text = time + " " + comment
+			selector := &tele.ReplyMarkup{}
+			btn := selector.Data(text, text)
+			selector.Inline(
+				selector.Row(btn),
+			)
+
+			c.Send(user_name, selector)
+		}
+		c.Send("Из списка введите время , по которому будет удалена запись")
 		b.Handle(tele.OnText, func(c tele.Context) error {
 
 			// All the text messages that weren't
 			// captured by existing handlers.
 
-			comment := ""
+			comment := "Никем не занята"
 
 			user_name := ""
 
@@ -239,16 +261,39 @@ func main() {
 			data := `UPDATE meetings 
 					SET in_meet = false, comment = $1,user_name = $2
 					WHERE in_time = $3`
-			//user_time = text
 
-			if _, err = db.Exec(data, comment, user_name, user_time); err != nil {
-				c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует")
-				return c.Send(err)
-			} else {
-				c.Send(err)
+			user_name_check_bool := true
+
+			dbcheck := `SELECT user_name,in_time from meetings WHERE in_time = $1`
+			var user_name_check string
+			var time string
+			if row := db.QueryRow(dbcheck, user_time); row != nil {
+				err := row.Scan(&user_name_check, &time)
+				if err != sql.ErrNoRows {
+					if user_name_check != c.Sender().Username {
+						user_name_check_bool = false
+						return c.Send("Сожалеем но на это время записаны не вы")
+					} else {
+						user_name_check_bool = true
+					}
+
+				}
 			}
-			// Instead, prefer a context short-hand:
-			return c.Send(c.Sender().Username + "Ты удалил запись на" + " " + user_time)
+
+			if user_name_check_bool {
+				if _, err = db.Exec(data, comment, user_name, user_time); err != nil {
+					c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует")
+					return c.Send(err)
+				} else {
+					c.Send(err)
+				}
+				// Instead, prefer a context short-hand:
+				return c.Send(c.Sender().Username + "Ты удалил запись на" + " " + user_time)
+			} else {
+
+				return c.Send(c.Sender().Username + "Эта запись не существует или её делали не вы" + " " + user_time)
+			}
+
 		})
 
 		return nil
