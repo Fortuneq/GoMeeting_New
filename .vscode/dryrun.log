@@ -1,0 +1,4 @@
+make: Entering directory '/home/vlad/Desktop/go/GoMeeting_New'
+migrate -database 'postgres://postgres:537j04222@localhost:5432/postgres?sslmode=disable' -path db/migrations up
+make: Leaving directory '/home/vlad/Desktop/go/GoMeeting_New'
+ 

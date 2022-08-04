@@ -84,7 +84,7 @@ func main() {
 		var (
 			text = c.Text()
 		)
-		c.Send("Записанные в  переговорки")
+		c.Send("Все слоты в которые кто-то записан")
 		show := `SELECT * FROM meetings
 					WHERE in_meet = $1`
 		rows, err := db.Query(show, true)
@@ -163,23 +163,44 @@ func main() {
 				//PLACE FOR CALLBACK FUNCTION
 
 				//
-				dbcheck := `SELECT * FROM meetings WHERE in_time = $1`
-				data := `UPDATE meetings 
+				//dbcheck := `SELECT * FROM meetings WHERE in_time = $1`
+				data := ` UPDATE meetings 
 					SET in_meet = true, comment = $1,user_name = $2
 					WHERE in_time = $3`
 				user_time = text
 
-				if rows, _ := db.Exec(dbcheck, user_time); rows != user_time {
-					
+				/*if rows, _ := db.Exec(dbcheck, user_time); err != nil {
+
 					c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует или кто-то уже записан")
 					return c.Send(rows)
 				} else {
 					fmt.Println(rows)
 					c.Send(rows)
+				}*/
+
+				user_time_valid := false
+				for i := 1; i < 10; i++ {
+					if user_time == "19:30" {
+						user_time_valid = false
+						break
+					}
+
+					if user_time == fmt.Sprintf("1%d:%d0", i, 0) {
+						user_time_valid = true
+						break
+					}
+
+					if user_time == fmt.Sprintf("1%d:%d0", i, 3) {
+						user_time_valid = true
+						break
+					}
+				}
+				if user_time_valid != true {
+					return c.Send("Возможно такое время не предусмотрено")
 				}
 
 				if _, err = db.Exec(data, user_comment, c.Sender().Username, user_time); err != nil {
-					c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует или кто-то уже записан")
+					c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует")
 					return c.Send(err)
 				} else {
 					c.Send(err)
@@ -201,6 +222,10 @@ func main() {
 			// All the text messages that weren't
 			// captured by existing handlers.
 
+			comment := ""
+
+			user_name := ""
+
 			var (
 				text = c.Text()
 			)
@@ -212,11 +237,11 @@ func main() {
 
 			//
 			data := `UPDATE meetings 
-					SET in_meet = false, comment = 'Никем не занята',user_name = ' '
+					SET in_meet = false, comment = $1,user_name = $2
 					WHERE in_time = $3`
 			//user_time = text
 
-			if _, err = db.Exec(data, user_time); err != nil {
+			if _, err = db.Exec(data, comment, user_name, user_time); err != nil {
 				c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует")
 				return c.Send(err)
 			} else {
