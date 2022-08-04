@@ -251,7 +251,29 @@ func main() {
 				//PLACE FOR CALLBACK FUNCTION
 
 				//
-
+				var dbcheck string
+				switch mtroom {
+				case 1:
+					dbcheck = `SELECT user_name,in_time from meetings_1 WHERE in_time = $1`
+				case 2:
+					dbcheck = `SELECT user_name,in_time from meetings_2 WHERE in_time = $1`
+				case 0:
+					c.Send("Вы не выбрали переговорку")
+					return nil
+			}
+	
+				
+				var user_name_check string
+				var time string
+				if row := db.QueryRow(dbcheck, user_time); row != nil {
+					err := row.Scan(&user_name_check, &time)
+					if err != sql.ErrNoRows {
+						if user_name_check != c.Sender().Username {
+							return c.Send("Сожалеем но на это время записаны не вы")
+						}
+						
+					}
+				}
 				var data string
 		
 		switch mtroom {
