@@ -2,12 +2,13 @@ show - Все готовые переговорки
 start - Занять переговорку
 cancel - Отменить запись в переговорку
 show_ordered - Кто записался в переговорки
+setroom - выбрать переговорку
 help - Какие команды я принимаю
 
 
 CREATE EVENT delete_class_data
 
-ON SCHEDULE EVERY 3 DAY
+ON SCHEDULE EVERY 1 DAY
 
 DO
 
