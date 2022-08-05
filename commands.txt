@@ -4,7 +4,7 @@ cancel - Отменить запись в переговорку
 show_ordered - Кто записался в переговорки
 setroom - выбрать переговорку
 help - Какие команды я принимаю
-
+setadmin - добавить админа 
 
 CREATE EVENT delete_class_data
 

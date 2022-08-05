@@ -30,7 +30,7 @@ func main() {
 	our_time := dt.Format("15:04")
 	our_time_minute := dt.Minute()
 
-	
+
 
 	var mtroom int
 
@@ -239,7 +239,60 @@ func main() {
 		return c.Send("Я принимаю команды /cancel,/start,/show,/show_ordered!")
 	})
 
+	b.Handle("/setadmin", func(c tele.Context) error {
+		c.Send("Создание админа")
+
+
+		c.Send("Если хотите стать админом, введите пороль")
+			
+			
+		b.Handle(tele.OnText, func(c tele.Context) error {
+			
+				text := c.Text()
+				password := "123"
+			user_input := text 
+			password_valid := false
+			for i := range user_input{
+				if user_input[i] == password[i]{
+					password_valid = true
+				} else{
+					password_valid = false 
+					break
+				}
+			}
+
+
+			if password_valid {
+				
+				data := update_admin(mtroom, c)
+				if data == "nil" {
+					return nil
+				}
+				
+				if _, err = db.Exec(data, c.Sender().Username); err != nil {
+					c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует")
+					return c.Send(err)
+				} else {
+					c.Send(err)
+				}
+
+				c.Send("Теперь вы админ")
+			} else {
+				c.Send("Что то не так с паролем")
+			}
+
+			return nil
+			})
+			
+
+		return nil
+	})
+
+
 	b.Handle("/start", func(c tele.Context) error {
+		var admin_prioritet int
+
+		var meetroom_count int
 		c.Send("Сначала выберите переговорку", selector)
 		var user_time string
 		var user_comment string
@@ -274,6 +327,7 @@ func main() {
 					return nil
 				}
 
+
 				var user_name_check string
 				var time string
 				if row := db.QueryRow(dbcheck, user_time); row != nil {
@@ -285,6 +339,7 @@ func main() {
 
 					}
 				}
+
 				data := data_msg(mtroom, c)
 				if data == "nil" {
 					return nil
@@ -319,6 +374,67 @@ func main() {
 				} else {
 					c.Send(err)
 				}
+
+
+
+
+				prior := check_priority(mtroom, c)
+				if prior == "nil" {
+					return nil
+				}
+
+				
+
+
+				if row := db.QueryRow(prior, c.Sender().Username); row != nil {
+					err := row.Scan(&admin_prioritet)
+					if err != sql.ErrNoRows {
+						if admin_prioritet == 2{
+							fmt.Println("admin rabotaet v systeme")
+							
+						}
+					}
+				}
+
+					show := show_user(mtroom, c)
+					if show == "nil" {
+						return nil
+					}
+
+					rows, err := db.Query(show, c.Sender().Username)
+					if err != nil {
+						log.Fatal(err)
+						fmt.Println(err)
+					}
+					for rows.Next() {
+						id, comment, time, in_meet, user_name, user_chat_id, priority := params()
+						if err := rows.Scan(&id, &comment, &user_name, &user_chat_id, &priority, &time, &in_meet); err != nil {
+							log.Fatal(err)
+							fmt.Println(err)
+						}else {
+							meetroom_count++
+						}
+						if meetroom_count == 4  && priority != 2 {
+							c.Send("Вы не можете выбрать больше 4 слотов на запись в переговорку")
+							return nil
+						}
+					}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 				// Instead, prefer a context short-hand:
 				return c.Send(c.Sender().Username + "ТЫ запиcан на" + " " + user_time)
 			})
@@ -329,9 +445,7 @@ func main() {
 	})
 
 	b.Handle("/cancel", func(c tele.Context) error {
-		c.Send(c.Text())
 		var user_time string
-		c.Send("Вот список ваших броней")
 
 		var (
 			text = c.Text()
@@ -345,6 +459,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 			fmt.Println(err)
+			
 		}
 
 		selector := &telebot.ReplyMarkup{ResizeKeyboard: true}
@@ -362,6 +477,7 @@ func main() {
 			if err := rows.Scan(&id, &comment, &user_name, &user_chat_id, &priority, &time, &in_meet); err != nil {
 				log.Fatal(err)
 				fmt.Println(err)
+				
 			}
 			text = time + " " + user_name + " " + comment
 			unique := fmt.Sprintf("Id:%d", id)
@@ -396,7 +512,7 @@ func main() {
 		)
 		/*selector.Data(text, text, text)
 		c.Data() */
-		c.Send("Все Занятые слоты", selector)
+		c.Send("Вот список занятых вами слотов", selector)
 
 	
 		c.Send("Из списка введите время , по которому будет удалена запись")
@@ -404,7 +520,7 @@ func main() {
 			comment := "Никем не занята"
 
 			user_name := ""
-			user_id := ""
+			user_id := 0
 
 			var (
 				text = c.Text()
@@ -446,6 +562,7 @@ func main() {
 			if user_name_check_bool {
 				if _, err = db.Exec(data, comment, user_name, user_id, user_time); err != nil {
 					c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует")
+					fmt.Println(err)
 					return c.Send(err)
 				} else {
 					c.Send(err)
@@ -462,7 +579,9 @@ func main() {
 		return nil
 	})
 
-	notif_users(mtroom , db,our_time, b)
+	if mtroom != 0 {
+		go heartBeat(mtroom , db,our_time, b)
+	}
 
 	b.Start()
 }
@@ -532,6 +651,20 @@ func dbcheck_msg(mtroom int, c tele.Context) (dbcheck string) {
 	return dbcheck
 }
 
+func check_priority(mtroom int,c tele.Context)(prior string){
+	switch mtroom {
+	case 1:
+		prior = `SELECT priority from meetings_1 WHERE user_name = $1`
+
+	case 2:
+		prior = `SELECT priority from meetings_2 WHERE user_name = $1`
+	case 0:
+		c.Send("Вы не выбрали переговорку")
+		prior = "nil"
+	}
+	return prior
+}
+
 func data_msg(mtroom int, c tele.Context) (data string) {
 	switch mtroom {
 	case 1:
@@ -569,13 +702,29 @@ func data_msg_fasle(mtroom int, c tele.Context) (data string) {
 	return data
 }
 
+func update_admin(mtroom int,c tele.Context)(data string){
+	switch mtroom {
+	case 1:
+		data = ` UPDATE meetings_1 
+		SET priority = 2
+		WHERE user_name = $1`
+
+	case 2:
+		data = ` UPDATE meetings_2 
+		SET priority = 2
+		WHERE user_name = $1`
+	case 0:
+		c.Send("Вы не выбрали переговорку")
+		data = "nil"
+	}
+	
+	return data
+}
+
 
 func notif_users(mtroom int, db * sql.DB,our_time string, b * tele.Bot){
 
 	show := show_msg_for_notif(mtroom)
-	if show == "nil"{
-		
-	}
 
 	rows, err := db.Query(show, true)
 	if err != nil {
@@ -593,4 +742,10 @@ func notif_users(mtroom int, db * sql.DB,our_time string, b * tele.Bot){
 		}
 	}
 
+}
+
+func heartBeat(mtroom int, db * sql.DB,our_time string, b * tele.Bot) {
+    for range time.Tick(time.Second * 1) {
+        notif_users(mtroom , db,our_time, b)
+    }
 }
