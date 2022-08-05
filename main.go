@@ -8,6 +8,7 @@ import (
 	//"os"
 	"time"
 
+	"gopkg.in/telebot.v3"
 	tele "gopkg.in/telebot.v3"
 
 	_ "github.com/lib/pq"
@@ -53,47 +54,30 @@ func main() {
 	var user_chat_id int64
 	//REALIZATION OF MENU MEETING ROOM CHANGE BUTTON
 	var (
-		// Universal markup builders.
-
 		selector = &tele.ReplyMarkup{}
 		btnPrev  = selector.Data("1", "prev")
 		btnNext  = selector.Data("2", "next")
 	)
-
-	/*b.Handle("/start_button", func(c tele.Context) error {
-		return c.Send("Hello!", selector)
-	})*/
 
 	selector.Inline(
 		selector.Row(btnPrev, btnNext),
 	)
 
 	b.Handle(&btnPrev, func(c tele.Context) error {
-		/*var (
-			text = c.Text()
-		)*/
 
 		mtroom = 1
 
 		c.Send("Выбрана переговорка №" + strconv.Itoa(mtroom))
 
 		return nil
-
 	})
 
 	b.Handle(&btnNext, func(c tele.Context) error {
-		/*var (
-			text = c.Text()
-		)*/
-
 		mtroom = 2
-
-		//c.Send("Пожалйста, выбери переговорку", selector)
 
 		c.Send("Выбрана переговорка №" + strconv.Itoa(mtroom))
 
 		return nil
-
 	})
 	//END OF REALIZATION
 
@@ -106,18 +90,9 @@ func main() {
 			//user = c.Sender()
 			text = c.Text()
 		)
-		c.Send("Свободные слоты в переговорку")
-		var show string
-
-		switch mtroom {
-		case 1:
-			show = `SELECT * FROM meetings_1
-				WHERE in_meet = $1`
-		case 2:
-			show = `SELECT * FROM meetings_2
-				WHERE in_meet = $1`
-		case 0:
-			c.Send("Вы не выбрали переговорку")
+		//c.Send("Свободные слоты в переговорку")
+		show := show_msg(mtroom, c)
+		if show == "nil" {
 			return nil
 		}
 
@@ -126,28 +101,58 @@ func main() {
 			log.Fatal(err)
 		}
 
+		selector := &telebot.ReplyMarkup{ResizeKeyboard: true}
+		row := telebot.Row{}
+		row2 := telebot.Row{}
+		row3 := telebot.Row{}
+		row4 := telebot.Row{}
+		row5 := telebot.Row{}
+		row6 := telebot.Row{}
+		row7 := telebot.Row{}
+		row8 := telebot.Row{}
 		for rows.Next() {
-			var id int
-			var comment string
-			var time string
-			var in_meet bool
-			var user_name string
-			var user_chat_id string
-			var priority int
+			id, comment, time, in_meet, user_name, user_chat_id, priority := params()
 			if err := rows.Scan(&id, &comment, &user_name, &user_chat_id, &priority, &time, &in_meet); err != nil {
 				log.Fatal(err)
 			}
-			text = time + " " + comment
-			selector := &tele.ReplyMarkup{}
-			btn := selector.Data(text, text)
-			selector.Inline(
-				selector.Row(btn),
-			)
-
-			c.Send(comment, selector)
+			text = time 
+			unique := fmt.Sprintf("Id:%d", id)
+			btn := selector.Data(text, "task", unique)
+			if len(row)<=1{
+				row = append(row, btn)
+			} else if len(row2)<=1{
+				row2 = append(row2, btn)
+				}else if len(row3)<=1{
+					row3 = append(row3, btn)
+				}else if len(row4)<=1{
+					row4 = append(row4, btn)
+				}else if len(row5)<=1{
+					row5 = append(row5, btn)
+				}else if len(row6)<=1{
+					row6 = append(row6, btn)
+				}else if len(row7)<=1{
+					row7 = append(row7, btn)
+				}else if len(row8)<=1{
+					row8 = append(row8, btn)
+				}
 		}
-		return nil
 
+		selector.Inline(
+			row,
+			row2,
+			row3,
+			row4,
+			row5,
+			row6,
+			row7,
+			row8,
+		)
+
+
+		/*selector.Data(text, text, text)
+		c.Data() */
+		c.Send("Все свободные слоты в переговорку", selector)
+		return nil
 	})
 
 	b.Handle("/show_ordered", func(c tele.Context) error {
@@ -155,45 +160,67 @@ func main() {
 			//user = c.Sender()
 			text = c.Text()
 		)
-		c.Send("Свободные слоты в переговорку")
-		var show string
+		c.Send("Занятые слоты в переговорку")
 
-		switch mtroom {
-		case 1:
-			show = `SELECT * FROM meetings_1
-				WHERE in_meet = $1`
-		case 2:
-			show = `SELECT * FROM meetings_2
-				WHERE in_meet = $1`
-		case 0:
-			c.Send("Вы не выбрали переговорку")
+		show := show_msg(mtroom, c)
+		if show == "nil" {
 			return nil
 		}
+
 		rows, err := db.Query(show, true)
 		if err != nil {
 			log.Fatal(err)
 		}
 
+		selector := &telebot.ReplyMarkup{ResizeKeyboard: true}
+		row := telebot.Row{}
+		row2 := telebot.Row{}
+		row3 := telebot.Row{}
+		row4 := telebot.Row{}
+		row5 := telebot.Row{}
+		row6 := telebot.Row{}
+		row7 := telebot.Row{}
+		row8 := telebot.Row{}
+
 		for rows.Next() {
-			var id int
-			var comment string
-			var time string
-			var in_meet bool
-			var user_chat_id string
-			var priority int
-			var user_name string
+			id, comment, time, in_meet, user_name, user_chat_id, priority := params()
 			if err := rows.Scan(&id, &comment, &user_name, &user_chat_id, &priority, &time, &in_meet); err != nil {
 				log.Fatal(err)
 			}
-			text = time + " " + comment
-			selector := &tele.ReplyMarkup{}
-			btn := selector.Data(text, text)
-			selector.Inline(
-				selector.Row(btn),
-			)
-
-			c.Send(user_name, selector)
+			text = time + " " + user_name + " " + comment
+			unique := fmt.Sprintf("Id:%d", id)
+			btn := selector.Data(text, "task", unique)
+			if len(row)<=1{
+				row = append(row, btn)
+			} else if len(row2)<=1{
+				row2 = append(row2, btn)
+				}else if len(row3)<=1{
+					row3 = append(row3, btn)
+				}else if len(row4)<=1{
+					row4 = append(row4, btn)
+				}else if len(row5)<=1{
+					row5 = append(row5, btn)
+				}else if len(row6)<=1{
+					row6 = append(row6, btn)
+				}else if len(row7)<=1{
+					row7 = append(row7, btn)
+				}else if len(row8)<=1{
+					row8 = append(row8, btn)
+				}
 		}
+		selector.Inline(
+			row,
+			row2,
+			row3,
+			row4,
+			row5,
+			row6,
+			row7,
+			row8,
+		)
+		/*selector.Data(text, text, text)
+		c.Data() */
+		c.Send("Все Занятые слоты", selector)
 		return nil
 	})
 
@@ -202,60 +229,37 @@ func main() {
 	})
 
 	b.Handle("/start", func(c tele.Context) error {
-
+		c.Send("Сначала выберите переговорку", selector)
 		var user_time string
 		var user_comment string
 		c.Send("Желаете записаться? Оставьте комментарий")
 
 		b.Handle(tele.OnText, func(c tele.Context) error {
-			// All the text messages that weren't
-			// captured by existing handlers.
 
 			var (
 				text = c.Text()
 			)
-
-			// Use full-fledged bot's functions
-			// only if you need a result:
 			user_comment = text
 			c.Send(user_comment + " " + "Твой комментарий")
 			// Instead, prefer a context short-hand:
 			c.Send("На какое время хочешь записаться ?")
 			b.Handle(tele.OnText, func(c tele.Context) error {
-
-				// All the text messages that weren't
-				// captured by existing handlers.
-
 				var (
 					text = c.Text()
 				)
 				user_time = text
-				// Instead, prefer a context short-hand:
+
 				return c.Send(user_time + " " + "Ты записан на это время")
 			})
 			b.Handle(tele.OnText, func(c tele.Context) error {
-
-				// All the text messages that weren't
-				// captured by existing handlers.
-
 				var (
 					text = c.Text()
 				)
 
 				user_time = text
-				//
 
-				//PLACE FOR CALLBACK FUNCTION
-
-				//
-				var dbcheck string
-				switch mtroom {
-				case 1:
-					dbcheck = `SELECT user_name,in_time from meetings_1 WHERE in_time = $1`
-				case 2:
-					dbcheck = `SELECT user_name,in_time from meetings_2 WHERE in_time = $1`
-				case 0:
-					c.Send("Вы не выбрали переговорку")
+				dbcheck := dbcheck_msg(mtroom, c)
+				if dbcheck == "nil" {
 					return nil
 				}
 
@@ -264,25 +268,14 @@ func main() {
 				if row := db.QueryRow(dbcheck, user_time); row != nil {
 					err := row.Scan(&user_name_check, &time)
 					if err != sql.ErrNoRows {
-						if user_name_check != c.Sender().Username {
-							return c.Send("Сожалеем но на это время записаны не вы")
+						if user_name_check != c.Sender().Username && user_name_check != " " {
+							return c.Send("Сожалеем но на это время записаны не вы" + user_name_check)
 						}
 
 					}
 				}
-				var data string
-
-				switch mtroom {
-				case 1:
-					data = ` UPDATE meetings_1 
-				SET in_meet = true, comment = $1,user_name = $2, user_chat_id = $3
-				WHERE in_time = $4`
-				case 2:
-					data = ` UPDATE meetings_2 
-				SET in_meet = true, comment = $1,user_name = $2, user_chat_id = $3
-				WHERE in_time = $4`
-				case 0:
-					c.Send("Вы не выбрали переговорку")
+				data := data_msg(mtroom, c)
+				if data == "nil" {
 					return nil
 				}
 				user_time = text
@@ -332,50 +325,71 @@ func main() {
 		var (
 			text = c.Text()
 		)
-		var show string
-		switch mtroom {
-		case 1:
-			show = `SELECT * FROM meetings_1
-					WHERE user_name = $1`
-		case 2:
-			show = `SELECT * FROM meetings_2
-					WHERE user_name = $1`
-		case 0:
-			c.Send("Вы не выбрали переговорку")
+		show := show_user(mtroom, c)
+		if show == "nil" {
 			return nil
 		}
 
 		rows, err := db.Query(show, c.Sender().Username)
 		if err != nil {
 			log.Fatal(err)
+			fmt.Println(err)
 		}
+
+		selector := &telebot.ReplyMarkup{ResizeKeyboard: true}
+		row := telebot.Row{}
+		row2 := telebot.Row{}
+		row3 := telebot.Row{}
+		row4 := telebot.Row{}
+		row5 := telebot.Row{}
+		row6 := telebot.Row{}
+		row7 := telebot.Row{}
+		row8 := telebot.Row{}
 
 		for rows.Next() {
-			var id int
-			var comment string
-			var time string
-			var in_meet bool
-			var user_name string
-			var user_chat_id string
-			var priority int
+			id, comment, time, in_meet, user_name, user_chat_id, priority := params()
 			if err := rows.Scan(&id, &comment, &user_name, &user_chat_id, &priority, &time, &in_meet); err != nil {
 				log.Fatal(err)
+				fmt.Println(err)
 			}
-			text = time + " " + comment
-			selector := &tele.ReplyMarkup{}
-			btn := selector.Data(text, text)
-			selector.Inline(
-				selector.Row(btn),
-			)
-
-			c.Send(user_name, selector)
+			text = time + " " + user_name + " " + comment
+			unique := fmt.Sprintf("Id:%d", id)
+			btn := selector.Data(text, "task", unique)
+			if len(row)<=1{
+				row = append(row, btn)
+			} else if len(row2)<=1{
+				row2 = append(row2, btn)
+				}else if len(row3)<=1{
+					row3 = append(row3, btn)
+				}else if len(row4)<=1{
+					row4 = append(row4, btn)
+				}else if len(row5)<=1{
+					row5 = append(row5, btn)
+				}else if len(row6)<=1{
+					row6 = append(row6, btn)
+				}else if len(row7)<=1{
+					row7 = append(row7, btn)
+				}else if len(row8)<=1{
+					row8 = append(row8, btn)
+				}
 		}
+		selector.Inline(
+			row,
+			row2,
+			row3,
+			row4,
+			row5,
+			row6,
+			row7,
+			row8,
+		)
+		/*selector.Data(text, text, text)
+		c.Data() */
+		c.Send("Все Занятые слоты", selector)
+
+	
 		c.Send("Из списка введите время , по которому будет удалена запись")
 		b.Handle(tele.OnText, func(c tele.Context) error {
-
-			// All the text messages that weren't
-			// captured by existing handlers.
-
 			comment := "Никем не занята"
 
 			user_name := ""
@@ -391,31 +405,15 @@ func main() {
 			//PLACE FOR CALLBACK FUNCTION
 
 			//
-			var data string
-
-			switch mtroom {
-			case 1:
-				data = ` UPDATE meetings_1 
-				SET in_meet = true, comment = $1,user_name = $2, user_chat_id = $3
-				WHERE in_time = $4`
-			case 2:
-				data = ` UPDATE meetings_2 
-				SET in_meet = true, comment = $1,user_name = $2, user_chat_id = $3
-				WHERE in_time = $4`
-			case 0:
-				c.Send("Вы не выбрали переговорку")
+			data := data_msg_fasle(mtroom, c)
+			if data == "nil" {
 				return nil
 			}
+
 			user_name_check_bool := true
 
-			var dbcheck string
-			switch mtroom {
-			case 1:
-				dbcheck = `SELECT user_name,in_time from meetings_1 WHERE in_time = $1`
-			case 2:
-				dbcheck = `SELECT user_name,in_time from meetings_2 WHERE in_time = $1`
-			case 0:
-				c.Send("Вы не выбрали переговорку")
+			dbcheck := dbcheck_msg(mtroom, c)
+			if dbcheck == "nil" {
 				return nil
 			}
 
@@ -454,4 +452,91 @@ func main() {
 	})
 
 	b.Start()
+}
+func params() (id int, comment string, time string,
+	in_meet bool,
+	user_name string,
+	user_chat_id string,
+	priority int) {
+	return
+}
+
+func show_msg(mtroom int, c tele.Context) (show string) {
+	switch mtroom {
+	case 1:
+		show = `SELECT * FROM meetings_1
+			WHERE in_meet = $1`
+	case 2:
+		show = `SELECT * FROM meetings_2
+			WHERE in_meet = $1`
+	case 0:
+		c.Send("Вы не выбрали переговорку")
+		show = "nil"
+	}
+	return show
+}
+
+func show_user(mtroom int, c tele.Context) (show string) {
+	switch mtroom {
+	case 1:
+		show = `SELECT * FROM meetings_1
+			WHERE user_name = $1`
+	case 2:
+		show = `SELECT * FROM meetings_2
+			WHERE user_name = $1`
+	case 0:
+		c.Send("Вы не выбрали переговорку")
+		show = "nil"
+	}
+	return show
+}
+
+func dbcheck_msg(mtroom int, c tele.Context) (dbcheck string) {
+	switch mtroom {
+	case 1:
+		dbcheck = `SELECT user_name,in_time from meetings_1 WHERE in_time = $1`
+
+	case 2:
+		dbcheck = `SELECT user_name,in_time from meetings_2 WHERE in_time = $1`
+	case 0:
+		c.Send("Вы не выбрали переговорку")
+		dbcheck = "nil"
+	}
+	return dbcheck
+}
+
+func data_msg(mtroom int, c tele.Context) (data string) {
+	switch mtroom {
+	case 1:
+		data = ` UPDATE meetings_1 
+		SET in_meet = true, comment = $1,user_name = $2, user_chat_id = $3
+		WHERE in_time = $4`
+
+	case 2:
+		data = ` UPDATE meetings_2 
+		SET in_meet = true, comment = $1,user_name = $2, user_chat_id = $3
+		WHERE in_time = $4`
+	case 0:
+		c.Send("Вы не выбрали переговорку")
+		data = "nil"
+	}
+	return data
+}
+
+func data_msg_fasle(mtroom int, c tele.Context) (data string) {
+	switch mtroom {
+	case 1:
+		data = ` UPDATE meetings_1 
+		SET in_meet = false, comment = $1,user_name = $2, user_chat_id = $3
+		WHERE in_time = $4`
+
+	case 2:
+		data = ` UPDATE meetings_2 
+		SET in_meet = false, comment = $1,user_name = $2, user_chat_id = $3
+		WHERE in_time = $4`
+	case 0:
+		c.Send("Вы не выбрали переговорку")
+		data = "nil"
+	}
+	return data
 }
