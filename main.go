@@ -26,8 +26,11 @@ const (
 
 func main() {
 
-	//dt := time.Now()
-	// our_time := dt.Format("15:04")
+	dt := time.Now()
+	our_time := dt.Format("15:04")
+	our_time_minute := dt.Minute()
+
+	
 
 	var mtroom int
 
@@ -51,6 +54,9 @@ func main() {
 		return
 	}
 
+
+
+
 	var user_chat_id int64
 	//REALIZATION OF MENU MEETING ROOM CHANGE BUTTON
 	var (
@@ -58,6 +64,10 @@ func main() {
 		btnPrev  = selector.Data("1", "prev")
 		btnNext  = selector.Data("2", "next")
 	)
+
+	if our_time == "13:26" || 25<=our_time_minute && our_time_minute <=30 {
+		b.Send(&tele.User{ID: 548839851}, our_time)
+	}
 
 	selector.Inline(
 		selector.Row(btnPrev, btnNext),
@@ -182,6 +192,7 @@ func main() {
 		row7 := telebot.Row{}
 		row8 := telebot.Row{}
 
+		
 		for rows.Next() {
 			id, comment, time, in_meet, user_name, user_chat_id, priority := params()
 			if err := rows.Scan(&id, &comment, &user_name, &user_chat_id, &priority, &time, &in_meet); err != nil {
@@ -451,6 +462,8 @@ func main() {
 		return nil
 	})
 
+	notif_users(mtroom , db,our_time, b)
+
 	b.Start()
 }
 func params() (id int, comment string, time string,
@@ -471,6 +484,20 @@ func show_msg(mtroom int, c tele.Context) (show string) {
 			WHERE in_meet = $1`
 	case 0:
 		c.Send("Вы не выбрали переговорку")
+		show = "nil"
+	}
+	return show
+}
+
+func show_msg_for_notif(mtroom int) (show string) {
+	switch mtroom {
+	case 1:
+		show = `SELECT * FROM meetings_1
+			WHERE in_meet = $1`
+	case 2:
+		show = `SELECT * FROM meetings_2
+			WHERE in_meet = $1`
+	case 0:
 		show = "nil"
 	}
 	return show
@@ -538,5 +565,32 @@ func data_msg_fasle(mtroom int, c tele.Context) (data string) {
 		c.Send("Вы не выбрали переговорку")
 		data = "nil"
 	}
+	
 	return data
+}
+
+
+func notif_users(mtroom int, db * sql.DB,our_time string, b * tele.Bot){
+
+	show := show_msg_for_notif(mtroom)
+	if show == "nil"{
+		
+	}
+
+	rows, err := db.Query(show, true)
+	if err != nil {
+		log.Println(err)
+	}
+
+	for rows.Next() {
+		id, comment, time, in_meet, user_name, user_chat_id, priority := params()
+		if err := rows.Scan(&id, &comment, &user_name, &user_chat_id, &priority, &time, &in_meet); err != nil {
+			log.Println(err)
+		}
+		user_chat_id_int,_ := strconv.Atoi(user_chat_id)
+		if our_time == time{
+			b.Send(&tele.User{ID: int64(user_chat_id_int)}, "У вас сейчас запись")
+		}
+	}
+
 }
