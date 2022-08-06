@@ -1,6 +1,4 @@
 make all --print-data-base --no-builtin-variables --no-builtin-rules --question
-make: *** No rule to make target 'all'.  Stop.
-
 # GNU Make 4.3
 # Built for x86_64-pc-linux-gnu
 # Copyright (C) 1988-2020 Free Software Foundation, Inc.
@@ -8,7 +6,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri Aug  5 11:09:19 2022
+# Make data base, printed on Sat Aug  6 16:01:23 2022
 
 # Variables
 
@@ -63,7 +61,7 @@ VSCODE_CODE_CACHE_PATH = /home/vlad/.config/Code/CachedData/3b889b090b5ad5793f52
 # environment
 LANG = C
 # environment
-XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.IMG0P1
+XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.RMWEQ1
 # default
 .LOADED := 
 # default
@@ -99,7 +97,7 @@ SNAP_REEXEC =
 # automatic
 @F = $(notdir $@)
 # environment
-VSCODE_PID = 4227
+VSCODE_PID = 5535
 # environment
 XDG_SESSION_TYPE = wayland
 # automatic
@@ -107,7 +105,7 @@ XDG_SESSION_TYPE = wayland
 # environment
 BAMF_DESKTOP_FILE_HINT = /var/lib/snapd/desktop/applications/code_code.desktop
 # environment
-SESSION_MANAGER = local/vlad-Lenovo-ideapad-330-15ARR:@/tmp/.ICE-unix/2310,unix/vlad-Lenovo-ideapad-330-15ARR:/tmp/.ICE-unix/2310
+SESSION_MANAGER = local/vlad-Lenovo-ideapad-330-15ARR:@/tmp/.ICE-unix/2155,unix/vlad-Lenovo-ideapad-330-15ARR:/tmp/.ICE-unix/2155
 # automatic
 *F = $(notdir $*)
 # environment
@@ -157,7 +155,7 @@ LC_TIME = ru_RU.UTF-8
 # environment
 SNAP = /snap/code/102
 # environment
-INVOCATION_ID = fe6879e10a2540118e8d12f9196c5f83
+INVOCATION_ID = aa0be8b809784b5d9e84b7a976b8035a
 # environment
 SNAP_REVISION = 102
 # environment
@@ -195,7 +193,7 @@ SNAP_ARCH = amd64
 # makefile
 .DEFAULT_GOAL := up
 # environment
-SYSTEMD_EXEC_PID = 2337
+SYSTEMD_EXEC_PID = 2175
 # environment
 DISPLAY = :0
 # environment
@@ -211,11 +209,11 @@ SNAP_DATA = /var/snap/code/102
 # environment
 SNAP_CONTEXT = w2Wb-VM8-eAhm9uV8JeVafh_gSHdN_5vCQNQdHkhTUdVqtaQ4qVc
 # environment
-MANAGERPID = 2151
+MANAGERPID = 1997
 # environment
 LC_MEASUREMENT = ru_RU.UTF-8
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 3381
+GIO_LAUNCHED_DESKTOP_FILE_PID = 4867
 # environment
 _ = /snap/code/102/usr/share/code/code
 # environment
@@ -225,7 +223,7 @@ XDG_RUNTIME_DIR = /run/user/1000
 # environment
 GDK_PIXBUF_MODULE_FILE = /home/vlad/snap/code/common/.cache/gdk-pixbuf-loaders.cache
 # environment
-JOURNAL_STREAM = 8:38264
+JOURNAL_STREAM = 8:36399
 # environment
 GOMODCACHE = /home/vlad/go/pkg/mod
 # environment
@@ -280,12 +278,14 @@ SNAP_LIBRARY_PATH = /var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd
 # Load=132/1024=13%, Rehash=0, Collisions=6/162=4%
 
 # Pattern-specific Variable Values
+ 
+make: *** No rule to make target 'all'.  Stop.
+
 
 # No pattern-specific variable values.
 
 # Directories
 
- 
 # . (device 2054, inode 2516912): 10 files, no impossibilities.
 
 # 10 files, no impossibilities in 1 directories.
@@ -344,6 +344,6 @@ down:
 # strcache performance: lookups = 23 / hit rate = 26%
 # hash-table stats:
 # Load=17/8192=0%, Rehash=0, Collisions=0/23=0%
-# Finished Make data base on Fri Aug  5 11:09:19 2022
+# Finished Make data base on Sat Aug  6 16:01:23 2022
 
  

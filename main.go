@@ -25,10 +25,10 @@ const (
 )
 
 func main() {
-
 	dt := time.Now()
-	our_time := dt.Format("15:04")
-	our_time_minute := dt.Minute()
+		our_time := dt.Format("15:04")
+
+	go timechange(dt,our_time)
 
 
 
@@ -65,10 +65,6 @@ func main() {
 		btnNext  = selector.Data("2", "next")
 	)
 
-	if our_time == "13:26" || 25<=our_time_minute && our_time_minute <=30 {
-		b.Send(&tele.User{ID: 548839851}, our_time)
-	}
-
 	selector.Inline(
 		selector.Row(btnPrev, btnNext),
 	)
@@ -77,7 +73,7 @@ func main() {
 
 		mtroom = 1
 
-		c.Send("Выбрана переговорка №" + strconv.Itoa(mtroom))
+		c.Edit("Выбрана переговорка №" + strconv.Itoa(mtroom))
 
 		return nil
 	})
@@ -85,7 +81,7 @@ func main() {
 	b.Handle(&btnNext, func(c tele.Context) error {
 		mtroom = 2
 
-		c.Send("Выбрана переговорка №" + strconv.Itoa(mtroom))
+		c.Edit("Выбрана переговорка №" + strconv.Itoa(mtroom))
 
 		return nil
 	})
@@ -127,7 +123,13 @@ func main() {
 			}
 			text = time 
 			unique := fmt.Sprintf("Id:%d", id)
-			btn := selector.Data(text, "task", unique)
+			btn := selector.Data(text,"task", unique)
+
+			b.Handle(&btn, func(c tele.Context) error {
+				c.Edit("Через свободные записи нельзя записаться , для этого есть /start")
+		
+				return nil
+			})
 			if len(row)<=1{
 				row = append(row, btn)
 			} else if len(row2)<=1{
@@ -291,9 +293,12 @@ func main() {
 
 	b.Handle("/start", func(c tele.Context) error {
 		var admin_prioritet int
-
+		var user_slots_true bool = true
 		var meetroom_count int
-		c.Send("Сначала выберите переговорку", selector)
+		if mtroom == 0{
+			c.Send("Сначала выберите переговорку", selector)
+		}
+		
 		var user_time string
 		var user_comment string
 		c.Send("Желаете записаться? Оставьте комментарий")
@@ -321,63 +326,7 @@ func main() {
 				)
 
 				user_time = text
-
-				dbcheck := dbcheck_msg(mtroom, c)
-				if dbcheck == "nil" {
-					return nil
-				}
-
-
-				var user_name_check string
-				var time string
-				if row := db.QueryRow(dbcheck, user_time); row != nil {
-					err := row.Scan(&user_name_check, &time)
-					if err != sql.ErrNoRows {
-						if user_name_check != c.Sender().Username && user_name_check != " " {
-							return c.Send("Сожалеем но на это время записаны не вы" + user_name_check)
-						}
-
-					}
-				}
-
-				data := data_msg(mtroom, c)
-				if data == "nil" {
-					return nil
-				}
-				user_time = text
-
-				user_time_valid := false
-				for i := 1; i < 10; i++ {
-					if user_time == "19:30" {
-						user_time_valid = false
-						break
-					}
-
-					if user_time == fmt.Sprintf("1%d:%d0", i, 0) {
-						user_time_valid = true
-						break
-					}
-
-					if user_time == fmt.Sprintf("1%d:%d0", i, 3) {
-						user_time_valid = true
-						break
-					}
-				}
-				if !user_time_valid {
-					return c.Send("Возможно такое время не предусмотрено")
-				}
-
-				user_chat_id = c.Sender().ID
-				if _, err = db.Exec(data, user_comment, c.Sender().Username, user_chat_id, user_time); err != nil {
-					c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует")
-					return c.Send(err)
-				} else {
-					c.Send(err)
-				}
-
-
-
-
+				// Проверка админ ли юзер
 				prior := check_priority(mtroom, c)
 				if prior == "nil" {
 					return nil
@@ -416,27 +365,78 @@ func main() {
 						}
 						if meetroom_count == 4  && priority != 2 {
 							c.Send("Вы не можете выбрать больше 4 слотов на запись в переговорку")
+							user_slots_true = false
 							return nil
 						}
 					}
+				// Проверка админ ли юзер (конец)
+
+				dbcheck := dbcheck_msg(mtroom, c)
+				if dbcheck == "nil" {
+					return nil
+				}
+
+
+				var user_name_check string
+				var time string
+				if row := db.QueryRow(dbcheck, user_time); row != nil {
+					err := row.Scan(&user_name_check, &time)
+					if err != sql.ErrNoRows {
+						if user_name_check != c.Sender().Username && user_name_check != "" {
+							return c.Send("Сожалеем но на это время записаны не вы, а" +" "+ user_name_check)
+						}
+
+					}
+				}
+
+				var data string
+				if user_slots_true {
+					data := data_msg(mtroom, c)
+					if data == "nil" {
+						return nil
+					}
+				} else {
+					return nil
+				}
+
+				user_time = text
+
+				user_time_valid := false
+				for i := 1; i < 10; i++ {
+					if user_time == "19:30" {
+						user_time_valid = false
+						break
+					}
+
+					if user_time == fmt.Sprintf("1%d:%d0", i, 0) {
+						user_time_valid = true
+						break
+					}
+
+					if user_time == fmt.Sprintf("1%d:%d0", i, 3) {
+						user_time_valid = true
+						break
+					}
+				}
+				if !user_time_valid {
+					return c.Send("Возможно такое время не предусмотрено")
+				}
+
+				user_chat_id = c.Sender().ID
+				if _, err = db.Exec(data, user_comment, c.Sender().Username, user_chat_id, user_time); err != nil {
+					c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует")
+					return c.Send(err)
+				} else {
+					c.Send(err)
+				}
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+				
 
 				// Instead, prefer a context short-hand:
-				return c.Send(c.Sender().Username + "ТЫ запиcан на" + " " + user_time)
+				return c.Send(c.Sender().Username + " " +"ТЫ запиcан на" + " " + user_time)
 			})
 
 			return nil
@@ -447,9 +447,32 @@ func main() {
 	b.Handle("/cancel", func(c tele.Context) error {
 		var user_time string
 
+		var admin_prioritet int 
+		if mtroom == 0{
+			c.Send("Сначала выберите переговорку", selector)
+		}
 		var (
 			text = c.Text()
 		)
+		//проверка на работу админа в системе
+		prior := check_priority(mtroom, c)
+				if prior == "nil" {
+					return nil
+				}
+
+				
+
+
+				if row := db.QueryRow(prior, c.Sender().Username); row != nil {
+					err := row.Scan(&admin_prioritet)
+					if err != sql.ErrNoRows {
+						if admin_prioritet == 2{
+							fmt.Println("admin rabotaet v systeme")
+							
+						}
+					}
+				}
+		// конец проверки на админа
 		show := show_user(mtroom, c)
 		if show == "nil" {
 			return nil
@@ -537,6 +560,22 @@ func main() {
 				return nil
 			}
 
+
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			user_name_check_bool := true
 
 			dbcheck := dbcheck_msg(mtroom, c)
@@ -546,18 +585,25 @@ func main() {
 
 			var user_name_check string
 			var time string
-			if row := db.QueryRow(dbcheck, user_time); row != nil {
-				err := row.Scan(&user_name_check, &time)
-				if err != sql.ErrNoRows {
-					if user_name_check != c.Sender().Username {
-						user_name_check_bool = false
-						return c.Send("Сожалеем но на это время записаны не вы")
-					} else {
-						user_name_check_bool = true
+			switch admin_prioritet{
+				case 0:
+					if row := db.QueryRow(dbcheck, user_time); row != nil {
+						err := row.Scan(&user_name_check, &time)
+						if err != sql.ErrNoRows {
+							if user_name_check != c.Sender().Username {
+								user_name_check_bool = false
+								return c.Send("Сожалеем но на это время записаны не вы")
+							} else {
+								user_name_check_bool = true
+							}
+		
+						}
 					}
 
-				}
+				case 2:
 			}
+
+			
 
 			if user_name_check_bool {
 				if _, err = db.Exec(data, comment, user_name, user_id, user_time); err != nil {
@@ -745,7 +791,14 @@ func notif_users(mtroom int, db * sql.DB,our_time string, b * tele.Bot){
 }
 
 func heartBeat(mtroom int, db * sql.DB,our_time string, b * tele.Bot) {
-    for range time.Tick(time.Second * 1) {
+    for range time.Tick(time.Second * 10) {
         notif_users(mtroom , db,our_time, b)
+    }
+}
+
+func timechange(dt time.Time,our_time string){
+	for range time.Tick(time.Second * 10) {
+        dt = time.Now()
+		our_time = dt.Format("15:04")
     }
 }
