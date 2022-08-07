@@ -5,7 +5,7 @@ import (
 	"log"
 	"strconv"
 
-	//"os"
+	"os"
 	"time"
 
 	"gopkg.in/telebot.v3"
@@ -24,12 +24,15 @@ const (
 	dbname   = "postgres"
 )
 
+
+
+
+
 func main() {
 	dt := time.Now()
 		our_time := dt.Format("15:04")
 
 	go timechange(dt,our_time)
-
 
 
 	var mtroom int
@@ -44,7 +47,7 @@ func main() {
 	defer db.Close()
 
 	pref := tele.Settings{
-		Token:  "5499433992:AAFHQ866_6-_YshxHPOp-oIpwv6X8XMxrPw",
+		Token:  os.Getenv("token"),
 		Poller: &tele.LongPoller{Timeout: 10 * time.Second},
 	}
 
@@ -365,6 +368,8 @@ func main() {
 						}
 						if meetroom_count == 4  && priority != 2 {
 							c.Send("Вы не можете выбрать больше 4 слотов на запись в переговорку")
+							fmt.Println(priority)
+							fmt.Println("что то не так")
 							user_slots_true = false
 							return nil
 						}
@@ -389,15 +394,15 @@ func main() {
 					}
 				}
 
-				var data string
-				if user_slots_true {
+				//var data string
+				
 					data := data_msg(mtroom, c)
 					if data == "nil" {
 						return nil
 					}
-				} else {
-					return nil
-				}
+				 /*else {
+			//		return nil
+			//	}*/
 
 				user_time = text
 
@@ -422,13 +427,23 @@ func main() {
 					return c.Send("Возможно такое время не предусмотрено")
 				}
 
-				user_chat_id = c.Sender().ID
-				if _, err = db.Exec(data, user_comment, c.Sender().Username, user_chat_id, user_time); err != nil {
-					c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует")
-					return c.Send(err)
+				if user_slots_true {
+					user_chat_id = c.Sender().ID
+					if _, err = db.Exec(data, user_comment, c.Sender().Username, user_chat_id, user_time); err != nil {
+						c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует")
+						fmt.Println(data)
+						fmt.Println(user_comment)
+						fmt.Println(user_chat_id)
+						fmt.Println(user_time)
+						return c.Send(err)
+					} else {
+						c.Send(err)
+					}
 				} else {
-					c.Send(err)
+					c.Send("У вас больше 4 слотов ")
 				}
+
+				
 
 
 
@@ -559,22 +574,6 @@ func main() {
 			if data == "nil" {
 				return nil
 			}
-
-
-			
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 			user_name_check_bool := true
 
@@ -797,7 +796,7 @@ func heartBeat(mtroom int, db * sql.DB,our_time string, b * tele.Bot) {
 }
 
 func timechange(dt time.Time,our_time string){
-	for range time.Tick(time.Second * 10) {
+	for range time.Tick(time.Minute * 1) {
         dt = time.Now()
 		our_time = dt.Format("15:04")
     }
