@@ -12,23 +12,29 @@ import (
 	tele "gopkg.in/telebot.v3"
 
 	_ "github.com/lib/pq"
-
+	"tgbot/util"
 	"database/sql"
 )
 
-const (
+/*const (
 	host     = "localhost"
 	port     = 5432
 	user     = "postgres"
 	password = "537j04222"
 	dbname   = "postgres"
-)
+)*/
 
 
 
 
 
 func main() {
+
+	config, err :=	util.LoadConfig(".")
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
+
 	dt := time.Now()
 		our_time := dt.Format("15:04")
 
@@ -37,9 +43,10 @@ func main() {
 
 	var mtroom int
 
+	port,_ := strconv.Atoi(config.PORT)
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+		"password=%s dbname=%s sslmode=disable",config.HOST,port,
+	config.PASSWORD,config.USER,config.DBNAME)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		panic(err)
