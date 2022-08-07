@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sat Aug  6 16:01:23 2022
+# Make data base, printed on Sun Aug  7 23:28:36 2022
 
 # Variables
 
@@ -21,13 +21,11 @@ SSH_AGENT_LAUNCHER = gnome-keyring
 # environment
 SNAP_INSTANCE_KEY = 
 # environment
-GJS_DEBUG_OUTPUT = stderr
-# environment
 LC_NAME = ru_RU.UTF-8
 # environment
 LC_NUMERIC = ru_RU.UTF-8
 # environment
-VSCODE_CWD = /home/vlad
+VSCODE_CWD = /home/vlad/Desktop/go/GoMeeting_New
 # environment
 LC_ADDRESS = ru_RU.UTF-8
 # default
@@ -66,8 +64,12 @@ XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.RMWEQ1
 .LOADED := 
 # default
 .INCLUDE_DIRS = /usr/local/include /usr/include /usr/include
+# environment
+GNOME_TERMINAL_SERVICE = :1.3918
 # makefile
 MAKEFLAGS = pqrR
+# environment
+DBUS_STARTER_ADDRESS = unix:path=/run/user/1000/bus,guid=b97e3d6fd06c4c6e2d26d29462ee6554
 # makefile
 CURDIR := /home/vlad/Desktop/go/GoMeeting_New
 # environment
@@ -97,13 +99,11 @@ SNAP_REEXEC =
 # automatic
 @F = $(notdir $@)
 # environment
-VSCODE_PID = 5535
+VSCODE_PID = 115848
 # environment
 XDG_SESSION_TYPE = wayland
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
-# environment
-BAMF_DESKTOP_FILE_HINT = /var/lib/snapd/desktop/applications/code_code.desktop
 # environment
 SESSION_MANAGER = local/vlad-Lenovo-ideapad-330-15ARR:@/tmp/.ICE-unix/2155,unix/vlad-Lenovo-ideapad-330-15ARR:/tmp/.ICE-unix/2155
 # automatic
@@ -111,7 +111,7 @@ SESSION_MANAGER = local/vlad-Lenovo-ideapad-330-15ARR:@/tmp/.ICE-unix/2155,unix/
 # environment
 CHROME_DESKTOP = code-url-handler.desktop
 # environment
-DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus,guid=b97e3d6fd06c4c6e2d26d29462ee6554
 # automatic
 <D = $(patsubst %/,%,$(dir $<))
 # environment
@@ -127,19 +127,17 @@ MAKECMDGOALS := all
 # environment
 XMODIFIERS = @im=ibus
 # environment
-GJS_DEBUG_TOPICS = JS ERROR;JS LOG
+SHLVL = 1
 # environment
-SHLVL = 0
+GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/c960048f_c9a2_40a9_9353_c3cc69ee6382
 # environment
 MAKELEVEL := 0
-# environment
-IM_CONFIG_CHECK_ENV = 1
 # default
 MAKE = $(MAKE_COMMAND)
 # environment
 SNAP_COOKIE = w2Wb-VM8-eAhm9uV8JeVafh_gSHdN_5vCQNQdHkhTUdVqtaQ4qVc
 # environment
-PATH = /home/vlad/.local/bin:/home/vlad/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/usr/local/go/bin:/home/vlad/go/bin:/usr/local/go/bin:/usr/local/go/bin:/home/vlad/go/bin
+PATH = /home/vlad/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/usr/local/go/bin:/home/vlad/go/bin:/usr/local/go/bin
 # default
 MAKEFILES := 
 # environment
@@ -154,8 +152,6 @@ SNAP_USER_COMMON = /home/vlad/snap/code/common
 LC_TIME = ru_RU.UTF-8
 # environment
 SNAP = /snap/code/102
-# environment
-INVOCATION_ID = aa0be8b809784b5d9e84b7a976b8035a
 # environment
 SNAP_REVISION = 102
 # environment
@@ -175,7 +171,7 @@ POSTGRESQL_URL = 'postgres://postgres:537j04222@localhost:5432/postgres?sslmode=
 # environment
 XDG_CURRENT_DESKTOP = Unity
 # environment
-LS_COLORS = 
+LS_COLORS = rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
 # automatic
 +F = $(notdir $+)
 # environment
@@ -187,13 +183,11 @@ GNUMAKEFLAGS :=
 # environment
 LOGNAME = vlad
 # environment
-GIO_LAUNCHED_DESKTOP_FILE = /var/lib/snapd/desktop/applications/code_code.desktop
-# environment
 SNAP_ARCH = amd64
 # makefile
 .DEFAULT_GOAL := up
 # environment
-SYSTEMD_EXEC_PID = 2175
+SYSTEMD_EXEC_PID = 2155
 # environment
 DISPLAY = :0
 # environment
@@ -209,21 +203,17 @@ SNAP_DATA = /var/snap/code/102
 # environment
 SNAP_CONTEXT = w2Wb-VM8-eAhm9uV8JeVafh_gSHdN_5vCQNQdHkhTUdVqtaQ4qVc
 # environment
-MANAGERPID = 1997
+DBUS_STARTER_BUS_TYPE = session
 # environment
 LC_MEASUREMENT = ru_RU.UTF-8
-# environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 4867
-# environment
-_ = /snap/code/102/usr/share/code/code
 # environment
 LC_PAPER = ru_RU.UTF-8
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
-GDK_PIXBUF_MODULE_FILE = /home/vlad/snap/code/common/.cache/gdk-pixbuf-loaders.cache
+COLORTERM = truecolor
 # environment
-JOURNAL_STREAM = 8:36399
+GDK_PIXBUF_MODULE_FILE = /home/vlad/snap/code/common/.cache/gdk-pixbuf-loaders.cache
 # environment
 GOMODCACHE = /home/vlad/go/pkg/mod
 # environment
@@ -238,6 +228,8 @@ QT_IM_MODULE = ibus
 ELECTRON_RUN_AS_NODE = 1
 # environment
 VSCODE_IPC_HOOK = /run/user/1000/vscode-d9811f1e-1.69.2-main.sock
+# environment
+TERM = xterm-256color
 # environment
 SNAP_NAME = code
 # environment
@@ -261,6 +253,8 @@ VSCODE_CLI = 1
 # environment
 ELECTRON_NO_ATTACH_CONSOLE = 1
 # environment
+VTE_VERSION = 6800
+# environment
 SNAP_COMMON = /var/snap/code/common
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync check-symlink load
@@ -275,20 +269,17 @@ LC_IDENTIFICATION = ru_RU.UTF-8
 # environment
 SNAP_LIBRARY_PATH = /var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd/void
 # variable set hash-table stats:
-# Load=132/1024=13%, Rehash=0, Collisions=6/162=4%
+# Load=129/1024=13%, Rehash=0, Collisions=13/159=8%
 
 # Pattern-specific Variable Values
- 
-make: *** No rule to make target 'all'.  Stop.
-
 
 # No pattern-specific variable values.
 
 # Directories
 
-# . (device 2054, inode 2516912): 10 files, no impossibilities.
+# . (device 2054, inode 2516912): 13 files, no impossibilities.
 
-# 10 files, no impossibilities in 1 directories.
+# 13 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -299,7 +290,10 @@ make: *** No rule to make target 'all'.  Stop.
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-08-03 13:08:37.558153671
+ 
+make: *** No rule to make target 'all'.  Stop.
+
+#  Last modified 2022-08-07 15:37:23.008810869
 #  File has been updated.
 #  Successfully updated.
 
@@ -309,6 +303,13 @@ up:
 #  File has not been updated.
 #  recipe to execute (from 'Makefile', line 4):
 	migrate -database ${POSTGRESQL_URL} -path db/migrations up
+
+server:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 9):
+	token="5499433992:AAFHQ866_6-_YshxHPOp-oIpwv6X8XMxrPw" go run main.go
 
 # Not a target:
 .DEFAULT:
@@ -331,19 +332,19 @@ down:
 	migrate -database ${POSTGRESQL_URL} -path db/migrations down
 
 # files hash-table stats:
-# Load=6/1024=1%, Rehash=0, Collisions=0/16=0%
+# Load=7/1024=1%, Rehash=0, Collisions=0/17=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 17 / storage = 128 B / avg = 7 B
-# current buf: size = 8162 B / used = 128 B / count = 17 / avg = 7 B
+# strcache buffers: 1 (0) / strings = 21 / storage = 159 B / avg = 7 B
+# current buf: size = 8162 B / used = 159 B / count = 21 / avg = 7 B
 
-# strcache performance: lookups = 23 / hit rate = 26%
+# strcache performance: lookups = 28 / hit rate = 25%
 # hash-table stats:
-# Load=17/8192=0%, Rehash=0, Collisions=0/23=0%
-# Finished Make data base on Sat Aug  6 16:01:23 2022
+# Load=21/8192=0%, Rehash=0, Collisions=0/28=0%
+# Finished Make data base on Sun Aug  7 23:28:36 2022
 
  

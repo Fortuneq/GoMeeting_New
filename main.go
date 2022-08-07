@@ -16,18 +16,6 @@ import (
 	"database/sql"
 )
 
-/*const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "537j04222"
-	dbname   = "postgres"
-)*/
-
-
-
-
-
 func main() {
 
 	config, err :=	util.LoadConfig(".")
@@ -46,7 +34,7 @@ func main() {
 	port,_ := strconv.Atoi(config.PORT)
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",config.HOST,port,
-	config.PASSWORD,config.USER,config.DBNAME)
+		config.DBNAME,config.PASSWORD,config.DBNAME)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		panic(err)
@@ -203,6 +191,14 @@ func main() {
 		row6 := telebot.Row{}
 		row7 := telebot.Row{}
 		row8 := telebot.Row{}
+		row9 := telebot.Row{}
+		row10 := telebot.Row{}
+		row11 := telebot.Row{}
+		row12 := telebot.Row{}
+		row13 := telebot.Row{}
+		row14 := telebot.Row{}
+		row15 := telebot.Row{}
+		row16 := telebot.Row{}
 
 		
 		for rows.Next() {
@@ -213,22 +209,41 @@ func main() {
 			text = time + " " + user_name + " " + comment
 			unique := fmt.Sprintf("Id:%d", id)
 			btn := selector.Data(text, "task", unique)
-			if len(row)<=1{
+			b.Handle(&btn, func(c tele.Context) error {
+				return c.Edit("Удаление осуществляется через ручной ввод ")
+			})
+			if len(row)<1{
 				row = append(row, btn)
-			} else if len(row2)<=1{
+			} else if len(row2)<1{
 				row2 = append(row2, btn)
-				}else if len(row3)<=1{
+				}else if len(row3)<1{
 					row3 = append(row3, btn)
-				}else if len(row4)<=1{
+				}else if len(row4)<1{
 					row4 = append(row4, btn)
-				}else if len(row5)<=1{
+				}else if len(row5)<1{
 					row5 = append(row5, btn)
-				}else if len(row6)<=1{
+				}else if len(row6)<1{
 					row6 = append(row6, btn)
-				}else if len(row7)<=1{
+				}else if len(row7)<1{
 					row7 = append(row7, btn)
-				}else if len(row8)<=1{
+				}else if len(row8)<1{
 					row8 = append(row8, btn)
+				}else if len(row9)<1{
+					row3 = append(row9, btn)
+				}else if len(row10)<1{
+					row4 = append(row10, btn)
+				}else if len(row11)<1{
+					row5 = append(row11, btn)
+				}else if len(row12)<1{
+					row6 = append(row12, btn)
+				}else if len(row13)<1{
+					row7 = append(row13, btn)
+				}else if len(row14)<1{
+					row8 = append(row14, btn)
+				}else if len(row15)<1{
+					row7 = append(row15, btn)
+				}else if len(row16)<1{
+					row8 = append(row16, btn)
 				}
 		}
 		selector.Inline(
@@ -240,6 +255,14 @@ func main() {
 			row6,
 			row7,
 			row8,
+			row9,
+			row10,
+			row11,
+			row12,
+			row13,
+			row14,
+			row15,
+			row16,
 		)
 		/*selector.Data(text, text, text)
 		c.Data() */
@@ -308,7 +331,82 @@ func main() {
 		if mtroom == 0{
 			c.Send("Сначала выберите переговорку", selector)
 		}
-		
+
+		if mtroom != 0{
+			var (
+				//user = c.Sender()
+				text = c.Text()
+			)
+			//c.Send("Свободные слоты в переговорку")
+			show := show_msg(mtroom, c)
+			if show == "nil" {
+				return nil
+			}
+	
+			rows, err := db.Query(show, false)
+			if err != nil {
+				log.Fatal(err)
+			}
+	
+			selector := &telebot.ReplyMarkup{ResizeKeyboard: true}
+			row := telebot.Row{}
+			row2 := telebot.Row{}
+			row3 := telebot.Row{}
+			row4 := telebot.Row{}
+			row5 := telebot.Row{}
+			row6 := telebot.Row{}
+			row7 := telebot.Row{}
+			row8 := telebot.Row{}
+			for rows.Next() {
+				id, comment, time, in_meet, user_name, user_chat_id, priority := params()
+				if err := rows.Scan(&id, &comment, &user_name, &user_chat_id, &priority, &time, &in_meet); err != nil {
+					log.Fatal(err)
+				}
+				text = time 
+				unique := fmt.Sprintf("Id:%d", id)
+				btn := selector.Data(text,"task", unique)
+	
+				b.Handle(&btn, func(c tele.Context) error {
+					c.Edit("Через кнопки пока нельзя записаться для этого у нас ручной ввод")
+			
+					return nil
+				})
+				if len(row)<=1{
+					row = append(row, btn)
+				} else if len(row2)<=1{
+					row2 = append(row2, btn)
+					}else if len(row3)<=1{
+						row3 = append(row3, btn)
+					}else if len(row4)<=1{
+						row4 = append(row4, btn)
+					}else if len(row5)<=1{
+						row5 = append(row5, btn)
+					}else if len(row6)<=1{
+						row6 = append(row6, btn)
+					}else if len(row7)<=1{
+						row7 = append(row7, btn)
+					}else if len(row8)<=1{
+						row8 = append(row8, btn)
+					}
+			}
+	
+			selector.Inline(
+				row,
+				row2,
+				row3,
+				row4,
+				row5,
+				row6,
+				row7,
+				row8,
+			)
+	
+	
+			/*selector.Data(text, text, text)
+			c.Data() */
+			c.Send("Все свободные слоты в переговорку", selector)
+			
+		}
 		var user_time string
 		var user_comment string
 		c.Send("Желаете записаться? Оставьте комментарий")
@@ -524,9 +622,13 @@ func main() {
 				fmt.Println(err)
 				
 			}
+			
 			text = time + " " + user_name + " " + comment
 			unique := fmt.Sprintf("Id:%d", id)
 			btn := selector.Data(text, "task", unique)
+			b.Handle(&btn, func(c tele.Context) error {
+				return c.Edit("Удаление осуществляется через ручной ввод ")
+			})
 			if len(row)<=1{
 				row = append(row, btn)
 			} else if len(row2)<=1{
