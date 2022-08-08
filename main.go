@@ -111,14 +111,14 @@ func main() {
 		row7 := telebot.Row{}
 		row8 := telebot.Row{}
 		for rows.Next() {
-			var p1 parameters
-			if err := rows.Scan(&p1.id, &p1.comment, &p1.user_name, &p1.user_chat_id, &p1.priority, &p1.time, &p1.in_meet); err != nil {
+			id, comment, time, in_meet, user_name, user_chat_id, priority := params()
+			if err := rows.Scan(&id, &comment, &user_name, &user_chat_id, &priority, &time, &in_meet); err != nil {
 				log.Fatal(err)
 			}
-			text = p1.time
-			unique := fmt.Sprintf("Id:%d", p1.id)
+			text = time
+			unique := fmt.Sprintf("Id:%d", id)
 			btn := selector.Data(text, "task", unique)
-			log.Println(p1.time)
+
 			b.Handle(&btn, func(c tele.Context) error {
 				c.Edit("Через свободные записи нельзя записаться , для этого есть /start")
 
@@ -154,15 +154,17 @@ func main() {
 			row8,
 		)
 
+		/*selector.Data(text, text, text)
+		c.Data() */
 		c.Send("Все свободные слоты в переговорку", selector)
 		return nil
 	})
 
 	b.Handle("/show_ordered", func(c tele.Context) error {
-		/*var (
+		var (
 			//user = c.Sender()
 			text = c.Text()
-		)*/
+		)
 		c.Send("Занятые слоты в переговорку")
 
 		show := show_msg(mtroom, c)
@@ -194,18 +196,14 @@ func main() {
 		row16 := telebot.Row{}
 
 		for rows.Next() {
-			var p5 parameters
-			if err := rows.Scan(&p5.id, &p5.comment, &p5.user_name, &p5.user_chat_id, &p5.priority, &p5.time, &p5.in_meet); err != nil {
+			id, comment, time, in_meet, user_name, user_chat_id, priority := params()
+			if err := rows.Scan(&id, &comment, &user_name, &user_chat_id, &priority, &time, &in_meet); err != nil {
 				log.Fatal(err)
 			}
-			//	text = c.Text()
-			log.Println(p5.time)
-			text := p5.time + " " + p5.user_name + " " + p5.comment
-			unique := fmt.Sprintf("Id:%d", p5.id)
+			text = time + " " + user_name + " " + comment
+			unique := fmt.Sprintf("Id:%d", id)
 			btn := selector.Data(text, "task", unique)
-
 			b.Handle(&btn, func(c tele.Context) error {
-				log.Println(text)
 				return c.Edit("Удаление осуществляется через ручной ввод ")
 			})
 			if len(row) < 1 {
@@ -260,7 +258,8 @@ func main() {
 			row15,
 			row16,
 		)
-
+		/*selector.Data(text, text, text)
+		c.Data() */
 		c.Send("Все Занятые слоты", selector)
 		return nil
 	})
@@ -324,8 +323,10 @@ func main() {
 
 		if mtroom != 0 {
 			var (
+				//user = c.Sender()
 				text = c.Text()
 			)
+			//c.Send("Свободные слоты в переговорку")
 			show := show_msg(mtroom, c)
 			if show == "nil" {
 				return nil
@@ -346,12 +347,12 @@ func main() {
 			row7 := telebot.Row{}
 			row8 := telebot.Row{}
 			for rows.Next() {
-				var p2 parameters
-				if err := rows.Scan(&p2.id, &p2.comment, &p2.user_name, &p2.user_chat_id, &p2.priority, &p2.time, &p2.in_meet); err != nil {
+				id, comment, time, in_meet, user_name, user_chat_id, priority := params()
+				if err := rows.Scan(&id, &comment, &user_name, &user_chat_id, &priority, &time, &in_meet); err != nil {
 					log.Fatal(err)
 				}
-				text = p2.time
-				unique := fmt.Sprintf("Id:%d", p2.id)
+				text = time
+				unique := fmt.Sprintf("Id:%d", id)
 				btn := selector.Data(text, "task", unique)
 
 				b.Handle(&btn, func(c tele.Context) error {
@@ -389,6 +390,8 @@ func main() {
 				row8,
 			)
 
+			/*selector.Data(text, text, text)
+			c.Data() */
 			c.Send("Все свободные слоты в переговорку", selector)
 
 		}
@@ -446,16 +449,16 @@ func main() {
 					fmt.Println(err)
 				}
 				for rows.Next() {
-					var p3 parameters
-					if err := rows.Scan(&p3.id, &p3.comment, &p3.user_name, &p3.user_chat_id, &p3.priority, &p3.time, &p3.in_meet); err != nil {
+					id, comment, time, in_meet, user_name, user_chat_id, priority := params()
+					if err := rows.Scan(&id, &comment, &user_name, &user_chat_id, &priority, &time, &in_meet); err != nil {
 						log.Fatal(err)
 						fmt.Println(err)
 					} else {
 						meetroom_count++
 					}
-					if meetroom_count == 4 && p3.priority != 2 {
+					if meetroom_count == 4 && priority != 2 {
 						c.Send("Вы не можете выбрать больше 4 слотов на запись в переговорку")
-						fmt.Println(p3.priority)
+						fmt.Println(priority)
 						fmt.Println("что то не так")
 						user_slots_true = false
 						return nil
@@ -479,6 +482,8 @@ func main() {
 
 					}
 				}
+
+				//var data string
 
 				data := data_msg(mtroom, c)
 				if data == "nil" {
@@ -585,15 +590,15 @@ func main() {
 		row8 := telebot.Row{}
 
 		for rows.Next() {
-			var p4 parameters
-			if err := rows.Scan(&p4.id, &p4.comment, &p4.user_name, &p4.user_chat_id, &p4.priority, &p4.time, &p4.in_meet); err != nil {
+			id, comment, time, in_meet, user_name, user_chat_id, priority := params()
+			if err := rows.Scan(&id, &comment, &user_name, &user_chat_id, &priority, &time, &in_meet); err != nil {
 				log.Fatal(err)
 				fmt.Println(err)
 
 			}
 
-			text = p4.time + " " + p4.user_name + " " + p4.comment
-			unique := fmt.Sprintf("Id:%d", p4.id)
+			text = time + " " + user_name + " " + comment
+			unique := fmt.Sprintf("Id:%d", id)
 			btn := selector.Data(text, "task", unique)
 			b.Handle(&btn, func(c tele.Context) error {
 				return c.Edit("Удаление осуществляется через ручной ввод ")
@@ -626,6 +631,8 @@ func main() {
 			row7,
 			row8,
 		)
+		/*selector.Data(text, text, text)
+		c.Data() */
 		c.Send("Вот список занятых вами слотов", selector)
 
 		c.Send("Из списка введите время , по которому будет удалена запись")
@@ -703,15 +710,12 @@ func main() {
 
 	b.Start()
 }
-
-type parameters struct {
-	id           int
-	comment      string
-	time         string
-	in_meet      bool
-	user_name    string
-	user_chat_id string
-	priority     int
+func params() (id int, comment string, time string,
+	in_meet bool,
+	user_name string,
+	user_chat_id string,
+	priority int) {
+	return
 }
 
 func show_msg(mtroom int, c tele.Context) (show string) {
@@ -852,12 +856,12 @@ func notif_users(mtroom int, db *sql.DB, our_time string, b *tele.Bot) {
 	}
 
 	for rows.Next() {
-		var p6 parameters
-		if err := rows.Scan(&p6.id, &p6.comment, &p6.user_name, &p6.user_chat_id, &p6.priority, &p6.time, &p6.in_meet); err != nil {
+		id, comment, time, in_meet, user_name, user_chat_id, priority := params()
+		if err := rows.Scan(&id, &comment, &user_name, &user_chat_id, &priority, &time, &in_meet); err != nil {
 			log.Println(err)
 		}
-		user_chat_id_int, _ := strconv.Atoi(p6.user_chat_id)
-		if our_time == p6.time {
+		user_chat_id_int, _ := strconv.Atoi(user_chat_id)
+		if our_time == time {
 			b.Send(&tele.User{ID: int64(user_chat_id_int)}, "У вас сейчас запись")
 		}
 	}
@@ -874,12 +878,5 @@ func timechange(dt time.Time, our_time string) {
 	for range time.Tick(time.Minute * 1) {
 		dt = time.Now()
 		our_time = dt.Format("15:04")
-	}
-}
-
-func newhandler(text string) func(c tele.Context) error {
-	return func(c tele.Context) error {
-		log.Println(text)
-		return c.Edit("Удаление осуществляется через ручной ввод " + text)
 	}
 }
