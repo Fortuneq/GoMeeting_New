@@ -68,7 +68,7 @@ func main() {
 
 		mtroom = 1
 
-		c.Edit("Выбрана переговорка №" + strconv.Itoa(mtroom))
+		c.Edit("Выбрана переговорка №" + "337")
 
 		return nil
 	})
@@ -76,7 +76,7 @@ func main() {
 	b.Handle(&btnNext, func(c tele.Context) error {
 		mtroom = 2
 
-		c.Edit("Выбрана переговорка №" + strconv.Itoa(mtroom))
+		c.Edit("Выбрана переговорка №" + "323")
 
 		return nil
 	})
@@ -287,7 +287,7 @@ func main() {
 
 			if password_valid {
 
-				data := update_admin(mtroom, c)
+				data := update_admin(c)
 				if data == "nil" {
 					return nil
 				}
@@ -418,7 +418,7 @@ func main() {
 
 				user_time = text
 				// Проверка админ ли юзер
-				prior := check_priority(mtroom, c)
+				prior := check_priority(c)
 				if prior == "nil" {
 					return nil
 				}
@@ -483,7 +483,7 @@ func main() {
 					return nil
 				}
 
-				user_time = text
+				//user_time = text
 
 				user_time_valid := false
 				for i := 1; i < 10; i++ {
@@ -509,12 +509,13 @@ func main() {
 				if user_slots_true {
 					user_chat_id = c.Sender().ID
 					if _, err = db.Exec(data, user_comment, c.Sender().Username, user_chat_id, user_time); err != nil {
-						c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует")
+						//c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует")
 						fmt.Println(data)
-						fmt.Println(c.Sender().ID)
-						fmt.Println(user_comment)
-						fmt.Println(user_chat_id)
-						fmt.Println(user_time)
+						fmt.Printf("%T\n", user_comment)
+						fmt.Printf("%T\n", c.Sender().Username)
+						fmt.Printf("%T\n", user_chat_id)
+						fmt.Printf("%T\n", user_time)
+						fmt.Println(err)
 						return c.Send(err)
 					} else {
 						c.Send(err)
@@ -543,7 +544,7 @@ func main() {
 			text = c.Text()
 		)
 		//проверка на работу админа в системе
-		prior := check_priority(mtroom, c)
+		prior := check_priority(c)
 		if prior == "nil" {
 			return nil
 		}
@@ -765,17 +766,9 @@ func dbcheck_msg(mtroom int, c tele.Context) (dbcheck string) {
 	return dbcheck
 }
 
-func check_priority(mtroom int, c tele.Context) (prior string) {
-	switch mtroom {
-	case 1:
-		prior = `SELECT priority from meetings_1 WHERE user_name = $1`
+func check_priority(c tele.Context) (prior string) {
 
-	case 2:
-		prior = `SELECT priority from meetings_2 WHERE user_name = $1`
-	case 0:
-		c.Send("Вы не выбрали переговорку")
-		prior = "nil"
-	}
+	prior = `SELECT priority from admins WHERE user_name = $1`
 	return prior
 }
 
@@ -816,25 +809,11 @@ func data_msg_fasle(mtroom int, c tele.Context) (data string) {
 	return data
 }
 
-func update_admin(mtroom int, c tele.Context) (data string) {
-	switch mtroom {
-	case 1:
-		data = ` UPDATE meetings_1 
-		SET priority = 2
-		WHERE user_name = $1`
+func update_admin(c tele.Context) (data string) {
 
-	case 2:
-		data = ` UPDATE meetings_2 
-		SET priority = 2
-		WHERE user_name = $1`
-	case 0:
-		c.Send("Вы не выбрали переговорку")
-		data = "nil"
-	}
-
+	data = ` INSERT INTO admins(user_name,priority) VALUES($1,2) `
 	return data
 }
-
 func notif_users(mtroom int, db *sql.DB, our_time string, b *tele.Bot) {
 
 	show := show_msg_for_notif(mtroom)
