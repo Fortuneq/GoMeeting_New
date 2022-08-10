@@ -26,7 +26,8 @@ func main() {
 	dt := time.Now()
 	our_time := dt.Format("15:04")
 
-	go timechange(dt, our_time)
+	our_time_point := &our_time
+	go timechange(dt, our_time_point)
 
 	var mtroom int
 
@@ -55,8 +56,8 @@ func main() {
 	//REALIZATION OF MENU MEETING ROOM CHANGE BUTTON
 	var (
 		selector = &tele.ReplyMarkup{}
-		btnPrev  = selector.Data("1", "prev")
-		btnNext  = selector.Data("2", "next")
+		btnPrev  = selector.Data("337", "prev")
+		btnNext  = selector.Data("323", "next")
 	)
 
 	selector.Inline(
@@ -87,10 +88,9 @@ func main() {
 	})
 	b.Handle("/show", func(c tele.Context) error {
 		var (
-			//user = c.Sender()
 			text = c.Text()
 		)
-		//c.Send("Свободные слоты в переговорку")
+
 		show := show_msg(mtroom, c)
 		if show == "nil" {
 			return nil
@@ -154,8 +154,6 @@ func main() {
 			row8,
 		)
 
-		/*selector.Data(text, text, text)
-		c.Data() */
 		c.Send("Все свободные слоты в переговорку", selector)
 		return nil
 	})
@@ -258,8 +256,7 @@ func main() {
 			row15,
 			row16,
 		)
-		/*selector.Data(text, text, text)
-		c.Data() */
+
 		c.Send("Все Занятые слоты", selector)
 		return nil
 	})
@@ -390,8 +387,6 @@ func main() {
 				row8,
 			)
 
-			/*selector.Data(text, text, text)
-			c.Data() */
 			c.Send("Все свободные слоты в переговорку", selector)
 
 		}
@@ -483,15 +478,10 @@ func main() {
 					}
 				}
 
-				//var data string
-
 				data := data_msg(mtroom, c)
 				if data == "nil" {
 					return nil
 				}
-				/*else {
-				//		return nil
-				//	}*/
 
 				user_time = text
 
@@ -521,6 +511,7 @@ func main() {
 					if _, err = db.Exec(data, user_comment, c.Sender().Username, user_chat_id, user_time); err != nil {
 						c.Send("Произошла какая-то ошибка, возможно такого слота не сущетсвует")
 						fmt.Println(data)
+						fmt.Println(c.Sender().ID)
 						fmt.Println(user_comment)
 						fmt.Println(user_chat_id)
 						fmt.Println(user_time)
@@ -631,8 +622,6 @@ func main() {
 			row7,
 			row8,
 		)
-		/*selector.Data(text, text, text)
-		c.Data() */
 		c.Send("Вот список занятых вами слотов", selector)
 
 		c.Send("Из списка введите время , по которому будет удалена запись")
@@ -874,9 +863,9 @@ func heartBeat(mtroom int, db *sql.DB, our_time string, b *tele.Bot) {
 	}
 }
 
-func timechange(dt time.Time, our_time string) {
+func timechange(dt time.Time, our_time_point *string) {
 	for range time.Tick(time.Minute * 1) {
 		dt = time.Now()
-		our_time = dt.Format("15:04")
+		*our_time_point = dt.Format("15:04")
 	}
 }
